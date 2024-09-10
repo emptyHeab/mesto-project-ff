@@ -15,7 +15,10 @@ function addCards(list) {
 function createCard(cardImage, cardTitle, deletFunction) {
   const card = cardTemplate.cloneNode(true);
 
-  card.querySelector('.card__image').src = cardImage;
+  const image = card.querySelector('.card__image');
+  image.src = cardImage;
+  image.alt = cardTitle;
+  
   card.querySelector('.card__title').textContent = cardTitle;
 
   card.querySelector('.card__delete-button').addEventListener('click', deletFunction);
@@ -24,7 +27,7 @@ function createCard(cardImage, cardTitle, deletFunction) {
 }
 
 function deleteCard(event){
-  event.target.parentElement.remove();
+  event.target.closest('.card').remove();
 }
 
 addCards();
