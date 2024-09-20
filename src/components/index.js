@@ -1,11 +1,14 @@
-const cardList = initialCards;
+import '../pages/index.css';
+import {initialCards} from './cards.js';
+
+const cardsList = initialCards;
 
 const cardTemplate = document.querySelector('#card-template').content;
 
 function addCards(list) {
   const place = document.querySelector('.places__list');
 
-  cardList.forEach(card => {
+  cardsList.forEach(card => {
     const cardName = card.name;
     const cardLink = card.link;
     place.append(createCard(cardLink, cardName, deleteCard));
