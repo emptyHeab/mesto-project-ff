@@ -1,6 +1,6 @@
 import '../pages/index.css';
-import {initialCards, createCard, deleteCard, cardsPlace, setLike, addClose, openImg} from './cards.js';
-import { openModal, closeModal} from './modal.js';
+import {initialCards, createCard, deleteCard, cardsPlace, setLike, cardImagePopup} from './cards.js';
+import { openModal, closeModal, addClose} from './modal.js';
 
 const cardsList = initialCards;
 
@@ -65,6 +65,22 @@ function addFormHandler(evt) {
 
 function newCardPopupHandler(evt) {
   addClose(evt, newCardPopup, newCardPopupHandler, addFormHandler);
+}
+
+function openImg(evt){
+  const popupImg = cardImagePopup.querySelector('.popup__image');
+
+  popupImg.src = evt.target.src;
+  popupImg.alt = evt.target.alt;
+  cardImagePopup.addEventListener('click', imgPopupHandler);
+  document.addEventListener('keydown', imgPopupHandler);
+  openModal(cardImagePopup);
+}
+
+function imgPopupHandler(evt){
+  addClose(evt, cardImagePopup, imgPopupHandler);
+  document.removeEventListener('keydown', imgPopupHandler);
+  cardImagePopup.removeEventListener('click', imgPopupHandler);
 }
 
 addCards();

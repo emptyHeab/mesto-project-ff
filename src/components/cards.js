@@ -1,5 +1,4 @@
-export{initialCards, cardsPlace, createCard, deleteCard, setLike, addClose, openImg};
-import {closeModal, openModal} from './modal.js';
+export{initialCards, cardsPlace, createCard, deleteCard, setLike, cardImagePopup};
 
 const initialCards = [
     {
@@ -59,33 +58,4 @@ function setLike(evt) {
     evt.target.classList.add('card__like-button_is-active');
   }
   
-}
-
-function openImg(evt){
-  const popupImg = cardImagePopup.querySelector('.popup__image');
-
-  popupImg.src = evt.target.src;
-  popupImg.alt = evt.target.alt;
-  cardImagePopup.addEventListener('click', imgPopupHandler);
-  document.addEventListener('keydown', imgPopupHandler);
-  openModal(cardImagePopup);
-}
-
-function imgPopupHandler(evt){
-  addClose(evt, cardImagePopup, imgPopupHandler);
-  document.removeEventListener('keydown', imgPopupHandler);
-  cardImagePopup.removeEventListener('click', imgPopupHandler);
-}
-
-function addClose(evt, popup, handler, submitHandler) {
-  const closeBtn = popup.querySelector('.popup__close');
-
-  if(evt.target === closeBtn || 
-    evt.target.classList.contains('popup')||
-  evt.key === 'Escape'){
-      closeModal(popup);
-      document.removeEventListener('keydown', handler);
-      popup.removeEventListener('click', handler);
-      popup.removeEventListener('submit', submitHandler);
-    }
 }
