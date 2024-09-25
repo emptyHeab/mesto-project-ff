@@ -1,3 +1,4 @@
+
 export{initialCards, cardsPlace, createCard, deleteCard, setLike, cardImagePopup};
 
 const initialCards = [
@@ -33,7 +34,7 @@ const cardTemplate = document.querySelector('#card-template').content;
 
 const cardImagePopup = document.querySelector('.popup_type_image');
 
-function createCard(card, deletFunction, likeFunction, openImgFunction) {
+function createCard(card) {
   const cardNew = cardTemplate.cloneNode(true);
 
   const image = cardNew.querySelector('.card__image');
@@ -41,21 +42,24 @@ function createCard(card, deletFunction, likeFunction, openImgFunction) {
   image.alt = card.name;
   
   cardNew.querySelector('.card__title').textContent = card.name;
-  cardNew.querySelector('.card__like-button').addEventListener('click', likeFunction);
-  cardNew.querySelector('.card__delete-button').addEventListener('click', deletFunction);
-  cardNew.querySelector('.card__image').addEventListener('click', openImgFunction);
+  cardNew.querySelector('.card__like-button').addEventListener('click', card.like);
+  cardNew.querySelector('.card__delete-button').addEventListener('click', card.delete);
+  cardNew.querySelector('.card__image').addEventListener('click', card.openImg);
   return cardNew;
 }
 
-function deleteCard(event){
-  event.target.closest('.card').remove();
+function deleteCard(evt){
+  const card = evt.target.closest('.card');
+  const name = card.querySelector('.card__title').textContent;
+  const link = card.querySelector('.card__image').src;
+  const i = initialCards.findIndex(card => 
+    card.name === name && card.link === link
+  );
+  initialCards.splice(i, 1);
+  card.remove();
 }
 
 function setLike(evt) {
-  if(evt.target.classList.contains('card__like-button_is-active')){
-    evt.target.classList.remove('card__like-button_is-active');
-  }else {
-    evt.target.classList.add('card__like-button_is-active');
-  }
+  evt.target.classList.toggle('card__like-button_is-active');
   
 }
