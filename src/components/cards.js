@@ -1,5 +1,20 @@
 
-export{initialCards};
+export{getCards};
+import { config } from "./api";
+
+const getCards = () => {
+  return fetch(`${config.url}/cards`,{
+    method: 'GET',
+    headers: config.headers
+  })
+  .then((response) => {
+    if(response.ok){
+      return response.json();
+    }
+    return Promise.reject(`Ошибка: ${response.status}`);
+  })
+  .catch((error) => console.log(error));
+}
 
 const initialCards = [
     {

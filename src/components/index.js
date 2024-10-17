@@ -1,9 +1,11 @@
 import '../pages/index.css';
-import {initialCards} from './cards.js';
-import { createCard, setLike, deleteCard} from './card.js';
-import { openModal, closeModal, isNeedToClose} from './modal.js';
+import {getCards} from './cards.js';
+import {createCard, setLike, deleteCard} from './card.js';
+import {openModal, closeModal, isNeedToClose} from './modal.js';
+import { enableValidation } from './validation.js';
+import { getUser, updateUser } from './api.js';
 
-const cardsList = initialCards;
+const cardsList = getCards();
 
 const cardsPlace = document.querySelector('.places__list');
 
@@ -27,64 +29,87 @@ const cardImagePopup = document.querySelector('.popup_type_image');
 const popupImg = cardImagePopup.querySelector('.popup__image');
 const imgPopupCaption = cardImagePopup.querySelector('.popup__caption');
 
-function addCards(list) {
-  cardsList.forEach(card => {
-    const cardName = card.name;
-    const cardLink = card.link;
-    cardsPlace.append(createCard({name: cardName, link: cardLink, openImg: openImg, like: setLike, delete: deleteCard}));
-  });
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+};
+
+const addCards = (list) => {
+  list.then((list) => {
+    list.forEach(card => {
+      const cardName = card.name;
+      const cardLink = card.link;
+      cardsPlace.append(createCard({name: cardName, link: cardLink, openImg: openImg, like: setLike, delete: deleteCard}));
+    });
+  })
 }
 
-function editBtnHandler() {
+const editBtnHandler = () => {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
-  openModal(editPopup);
+  openModal(editPopup, validationConfig);
 }
 
-function addFormSubmitHandler(evt) {
+const addFormSubmitHandler = (evt) => {
   evt.preventDefault();
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
+  updateUser(nameInput.value, jobInput.value);
   closeModal(editPopup);
 }
 
-function editPopupHandler(evt) {
+const editPopupHandler = (evt) => {
   if(isNeedToClose(evt)){
     closeModal(editPopup);
   }
+  enableValidation(editForm, validationConfig);
 }
 
-function addBtnHandler() {
-  openModal(newCardPopup);
+const addBtnHandler = () => {
+  openModal(newCardPopup, validationConfig);
 }
 
-function addFormHandler(evt) {
+const addFormHandler = (evt) => {
   evt.preventDefault();
   cardsPlace.prepend(createCard({name: placeNameInput.value, link: linkInput.value, like: setLike, delete: deleteCard, openImg: openImg}));
   closeModal(newCardPopup);
   addForm.reset();
 }
 
-function newCardPopupHandler(evt) {
+const newCardPopupHandler = (evt) => {
   if(isNeedToClose(evt)){
     closeModal(newCardPopup);
+    addForm.reset();
   }
+  enableValidation(addForm, validationConfig);
 }
 
-function openImg(evt){
+const openImg = (evt) =>{
   popupImg.src = evt.target.src;
   popupImg.alt = evt.target.alt;
   imgPopupCaption.textContent = evt.target.closest('.card').querySelector('.card__title').textContent;
-  openModal(cardImagePopup);
+  openModal(cardImagePopup, validationConfig);
 }
 
-function cardImagePopupHandler(evt){
+const cardImagePopupHandler = (evt) =>{
   if(isNeedToClose(evt)){
     closeModal(cardImagePopup);
   }
 }
 
-addCards();
+const initProfile = () =>{
+  getUser().then((user) =>{
+    profileTitle.textContent = user.name;
+    profileDescription.textContent = user.about;
+  })
+}
+
+initProfile();
+addCards(cardsList);
 profileEditBtn.addEventListener('click', editBtnHandler);
 editPopup.addEventListener('click', editPopupHandler);  
 editForm.addEventListener('submit', addFormSubmitHandler);
@@ -92,3 +117,4 @@ profileAddBtn.addEventListener('click', addBtnHandler);
 newCardPopup.addEventListener('click', newCardPopupHandler);
 addForm.addEventListener('submit', addFormHandler);
 cardImagePopup.addEventListener('click', cardImagePopupHandler);
+getUser();
