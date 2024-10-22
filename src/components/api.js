@@ -1,4 +1,4 @@
-export {getUser, updateUser, config};
+export {getUser, updateUser, addCard, deleteCard, setLike, deleteLike, updateAvatar, config};
 
 const config = {
   url: 'https://nomoreparties.co/v1/wff-cohort-24',
@@ -17,8 +17,7 @@ const getUser = () => {
     return response.json();
    }
    return Response.reject(`Ошибка: ${response.status}`);
-  })
-  .catch((error) => console.log(error));
+  });
 }
 
 const updateUser = (name, about) => {
@@ -35,12 +34,11 @@ const updateUser = (name, about) => {
       return response.json();
     }
     return Response.reject(`Ошибка: ${response.status}`);
-  })
-  .catch((error) => console.log(error));
+  });
 }
 
 const addCard = (name, link) => {
-  fetch(`${config.url}/cards`,{
+  return fetch(`${config.url}/cards`,{
     method: 'POST',
     headers: config.headers,
     body: JSON.stringify({
@@ -48,11 +46,65 @@ const addCard = (name, link) => {
       link: link
     })
   })
-  then((response) => {
+  .then((response) => {
     if(response.ok){
       return response.json();
     }
     return Response.reject(`Ошибка: ${response.status}`);
+  });
+}
+
+const deleteCard = (id) => {
+  return fetch(`${config.url}/cards/${id}`, {
+    method: 'DELETE',
+    headers: config.headers
   })
-  .catch((error) => console.log(error));
+  .then((response) => {
+    if(response.ok){
+      return response.json();
+    }
+    return Response.reject(`Ошибка: ${response.status}`);
+  });
+}
+
+const setLike = (id) => {
+  return fetch(`${config.url}/cards/likes/${id}`, {
+    method: 'PUT',
+    headers: config.headers
+  })
+  .then((response) => {
+    if(response.ok){
+      return response.json();
+    }
+    return Response.reject(`Ошибка: ${response.status}`);
+  });
+}
+
+const deleteLike = (id) => {
+  return fetch(`${config.url}/cards/likes/${id}`, {
+    method: 'DELETE',
+    headers: config.headers
+  })
+  .then((response) => {
+    if(response.ok){
+      return response.json();
+    }
+    return Response.reject(`Ошибка: ${response.status}`);
+  });
+}
+
+const updateAvatar = (avatarLink) => {
+  return fetch(`${config.url}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: `${avatarLink}`
+    })
+  })
+  .then((response) => {
+    if(response.ok){
+      return response.json();
+    }
+    return Response.reject(`Ошибка: ${response.status}`);
+  });
 }
