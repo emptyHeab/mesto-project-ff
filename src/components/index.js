@@ -60,7 +60,7 @@ const addCards = () => {
       likesList: card.likes, 
       id: card._id}));
   })
-})
+}).catch((error) => console.log(error));
 }
 
 const editBtnHandler = () => {
