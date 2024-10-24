@@ -1,5 +1,6 @@
 export {createCard, deleteCard, setLike};
-import {deleteCard as deleteCardApi, setLike as setLikeApi, deleteLike, getUser} from './api';
+import {deleteCard as deleteCardApi, setLike as setLikeApi, deleteLike} from './api';
+import { userId } from './index';
 
 const cardTemplate = document.querySelector('#card-template').content.querySelector('.places__item');
 
@@ -8,12 +9,13 @@ function createCard(card) {
   const deleteBtn = cardNew.querySelector('.card__delete-button');
   const image = cardNew.querySelector('.card__image');
   const likeBtn = cardNew.querySelector('.card__like-button');
+  const likeNumber = cardNew.querySelector('.card__like-number');
 
   image.src = card.link;
   image.alt = card.name;
   
   cardNew.querySelector('.card__title').textContent = card.name;
-  cardNew.querySelector('.card__like-button').addEventListener('click', card.like);
+  cardNew.querySelector('.card__like-button').addEventListener('click', () => card.like(card.id, likeBtn, likeNumber));
   cardNew.querySelector('.card__image').addEventListener('click', card.openImg);
   cardNew.querySelector('.card__like-number').textContent = card.likesList.length;
   cardNew.setAttribute('data-id',`${card.id}`);
@@ -24,12 +26,9 @@ function createCard(card) {
     deleteBtn.classList.add('card__delete-button_disabled');
   }
 
-  getUser().then((user) => {
-    if(hasUser(card.likesList, user._id)){
-      likeBtn.classList.add('card__like-button_is-active');
-    }
-  })
-  .catch((error) => console.log(error));
+  if(hasUser(card.likesList, userId)){
+    likeBtn.classList.add('card__like-button_is-active');
+  }
 
   return cardNew;
 }
@@ -43,22 +42,19 @@ function deleteCard(evt){
   .catch((error) => console.log(error));
 }
 
-function setLike(evt) {
-  const likeBtn = evt.target;
-  const card = likeBtn.closest('.card');
-
+function setLike(id, likeBtn, likeNumber) {
   if(!likeBtn.classList.contains('card__like-button_is-active')){
-    setLikeApi(card.dataset.id)
+    setLikeApi(id)
     .then((data)=> {
       likeBtn.classList.add('card__like-button_is-active');
-      refreshLikeNumber(card, data.likes.length);
+      likeNumber.textContent = data.likes.length;
     })
     .catch((error) => console.log(error));
   }else {
-    deleteLike(card.dataset.id)
+    deleteLike(id)
     .then((data)=> {
       likeBtn.classList.remove('card__like-button_is-active');
-      refreshLikeNumber(card, data.likes.length);
+      likeNumber.textContent = data.likes.length;
     })
     .catch((error) => console.log(error));
   }
@@ -68,9 +64,4 @@ const hasUser = (array, id) => {
   return array.some((user) => {
     return user._id === id;
   });
-}
-
-const refreshLikeNumber = (card, number) => {
-  const likeNumber = card.querySelector('.card__like-number');
-  likeNumber.textContent = number;
 }

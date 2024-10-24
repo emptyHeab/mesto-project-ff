@@ -1,7 +1,10 @@
 export {enableValidation, clearValidation};
 
-const enableValidation = (form, config) => {
-  addInputListeners(form, config);
+const enableValidation = (config) => {
+  const forms = Array.from(document.querySelectorAll(config.formSelector));
+  forms.forEach((form) => {
+    addInputListeners(form, config);
+  })
 }
 
 const addInputListeners = (formElement, config) => {
@@ -22,11 +25,10 @@ const addInputListeners = (formElement, config) => {
       
       if(!input.validity.valid){
         showInputError(formElement, input, input.validationMessage, config);
-        toggleBtn(btn, inputs, config);
       }else {
         hideInputError(formElement, input, config);
-        toggleBtn(btn, inputs, config);
       }
+      toggleBtn(btn, inputs, config);
     });
   });
 }
@@ -41,6 +43,8 @@ const showInputError = (formElement, input, errorMessage, config) => {
 
 const hideInputError = (formElement, input, config) => {
   const errorArea = formElement.querySelector(`#${input.id}-error`);
+
+  input.setCustomValidity('');
   input.classList.remove(config.inputErrorClass);
   errorArea.classList.remove(config.errorClass);
 }
@@ -61,12 +65,9 @@ const isFormInvalid = (inputs) => {
   });
 }
 
-const clearValidation = (popup, config) => {
-  const inputs = Array.from(popup.querySelectorAll(config.inputSelector));
-  if(inputs.length > 0){
-    const form = popup.querySelector(config.formSelector);
-    inputs.forEach((element)=> hideInputError(form, element, config));
-    const btn = popup.querySelector(config.submitButtonSelector);
-    toggleBtn(btn, inputs, config);
-  }
+const clearValidation = (popup, form, config) => {
+  const inputs = Array.from(form.querySelectorAll(config.inputSelector));
+  inputs.forEach((element)=> hideInputError(form, element, config));
+  const btn = popup.querySelector(config.submitButtonSelector);
+  toggleBtn(btn, inputs, config);
 }

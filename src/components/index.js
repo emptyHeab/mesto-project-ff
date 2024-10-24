@@ -4,6 +4,8 @@ import {createCard, setLike, deleteCard} from './card.js';
 import {openModal, closeModal, isNeedToClose} from './modal.js';
 import { enableValidation } from './validation.js';
 import { getUser, updateUser, addCard, updateAvatar } from './api.js';
+import { clearValidation } from './validation.js';
+export {userId};
 
 const cardsPlace = document.querySelector('.places__list');
 
@@ -33,6 +35,8 @@ const avatarEditForm = avatarEditPopup.querySelector('[name=edit-avatar]');
 const avatar = document.querySelector('.profile__image');
 const avatarEditFormInput = avatarEditForm.querySelector('[name=link]');
 
+let userId;
+
 const validationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -42,9 +46,11 @@ const validationConfig = {
   errorClass: 'popup__error_visible'
 };
 
-const addCards = () => {
+const initPage = () => {
   Promise.all([getCards(), getUser()])
   .then(([cardsList, user]) => {
+    userId = user._id;
+    initProfile(user);
   cardsList.forEach(card => {
     const cardName = card.name;
     const cardLink = card.link;
@@ -67,6 +73,7 @@ const editBtnHandler = () => {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
   openModal(editPopup, validationConfig);
+  clearValidation(editPopup, editForm, validationConfig);
 }
 
 const addFormSubmitHandler = (evt) => {
@@ -87,11 +94,11 @@ const editPopupHandler = (evt) => {
   if(isNeedToClose(evt)){
     closeModal(editPopup);
   }
-  enableValidation(editForm, validationConfig);
 }
 
 const addBtnHandler = () => {
   openModal(newCardPopup, validationConfig);
+  clearValidation(newCardPopup ,addForm, validationConfig);
 }
 
 const addFormHandler = (evt) => {
@@ -121,7 +128,6 @@ const newCardPopupHandler = (evt) => {
     closeModal(newCardPopup);
     addForm.reset();
   }
-  enableValidation(addForm, validationConfig);
 }
 
 const openImg = (evt) => {
@@ -139,13 +145,14 @@ const cardImagePopupHandler = (evt) => {
 
 const editAvatarBtnHandler = () => {
  openModal(avatarEditPopup, validationConfig);
+ clearValidation(avatarEditPopup, avatarEditForm, validationConfig);
 }
 
 const editAvatarPopupHandler = (evt) => {
   if(isNeedToClose(evt)){
     closeModal(avatarEditPopup);
+    avatarEditForm.reset();
   }
-  enableValidation(avatarEditForm, validationConfig);
 }
 
 const editAvatarFormHandler = (evt) => {
@@ -163,13 +170,10 @@ const editAvatarFormHandler = (evt) => {
   });
 }
 
-const initProfile = () => {
-  getUser().then((user) =>{
-    profileTitle.textContent = user.name;
-    profileDescription.textContent = user.about;
-    avatar.style.backgroundImage =`url(${user.avatar})`;
-  })
-  .catch((error) => console.log(error));
+const initProfile = (user) => {
+  profileTitle.textContent = user.name;
+  profileDescription.textContent = user.about;
+  avatar.style.backgroundImage =`url(${user.avatar})`;
 }
 
 const setLoader = (form, status) => {
@@ -181,8 +185,7 @@ const setLoader = (form, status) => {
   }
 }
 
-initProfile();
-addCards();
+initPage();
 profileEditBtn.addEventListener('click', editBtnHandler);
 editPopup.addEventListener('click', editPopupHandler);  
 editForm.addEventListener('submit', addFormSubmitHandler);
@@ -193,3 +196,4 @@ cardImagePopup.addEventListener('click', cardImagePopupHandler);
 avatarEditBtn.addEventListener('click', editAvatarBtnHandler);
 avatarEditPopup.addEventListener('click', editAvatarPopupHandler);
 avatarEditForm.addEventListener('submit', editAvatarFormHandler);
+enableValidation(validationConfig);

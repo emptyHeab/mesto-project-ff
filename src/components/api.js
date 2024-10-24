@@ -13,10 +13,7 @@ const getUser = () => {
     headers: config.headers
   })
   .then((response) => {
-   if(response.ok){
-    return response.json();
-   }
-   return Response.reject(`Ошибка: ${response.status}`);
+    return responseHandler(response);
   });
 }
 
@@ -30,10 +27,7 @@ const updateUser = (name, about) => {
     })
   })
   .then((response) => {
-    if(response.ok){
-      return response.json();
-    }
-    return Response.reject(`Ошибка: ${response.status}`);
+    return responseHandler(response);
   });
 }
 
@@ -47,10 +41,7 @@ const addCard = (name, link) => {
     })
   })
   .then((response) => {
-    if(response.ok){
-      return response.json();
-    }
-    return Response.reject(`Ошибка: ${response.status}`);
+    return responseHandler(response);
   });
 }
 
@@ -60,10 +51,7 @@ const deleteCard = (id) => {
     headers: config.headers
   })
   .then((response) => {
-    if(response.ok){
-      return response.json();
-    }
-    return Response.reject(`Ошибка: ${response.status}`);
+    return responseHandler(response);
   });
 }
 
@@ -73,10 +61,7 @@ const setLike = (id) => {
     headers: config.headers
   })
   .then((response) => {
-    if(response.ok){
-      return response.json();
-    }
-    return Response.reject(`Ошибка: ${response.status}`);
+    return responseHandler(response);
   });
 }
 
@@ -86,10 +71,7 @@ const deleteLike = (id) => {
     headers: config.headers
   })
   .then((response) => {
-    if(response.ok){
-      return response.json();
-    }
-    return Response.reject(`Ошибка: ${response.status}`);
+    return responseHandler(response);
   });
 }
 
@@ -102,9 +84,13 @@ const updateAvatar = (avatarLink) => {
     })
   })
   .then((response) => {
-    if(response.ok){
-      return response.json();
-    }
-    return Response.reject(`Ошибка: ${response.status}`);
+    return responseHandler(response);
   });
+}
+
+const responseHandler = (response) => {
+  if(response.ok){
+    return response.json();
+  }
+  return Response.reject(`Ошибка: ${response.status}`);
 }

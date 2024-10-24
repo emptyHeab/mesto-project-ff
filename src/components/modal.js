@@ -1,8 +1,6 @@
 export {openModal, closeModal, escHandler, isNeedToClose};
-import { clearValidation } from "./validation";
 
-function openModal(popup, validationConfig) {
-  clearValidation(popup, validationConfig);
+function openModal(popup) {
   popup.classList.add('popup_is-opened');
 
   document.addEventListener('keydown', escHandler);
